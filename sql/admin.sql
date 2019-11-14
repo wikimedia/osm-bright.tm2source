@@ -2,7 +2,9 @@
 -- precalculated maritime flag. Because admin lines aren't necessarily delimited on
 -- water boundaries, split them so that every piece is either only over water or land
 
-CREATE TABLE IF NOT EXISTS admin (LIKE planet_osm_roads EXCLUDING CONSTRAINTS);
+CREATE TABLE IF NOT EXISTS admin (LIKE planet_osm_roads INCLUDING ALL);
+--  imposm3 creates primary key on planet_osm_roads and we should drop it if exists
+ALTER TABLE admin DROP CONSTRAINT IF EXISTS admin_pkey;
 
 --
 -- Populates admin table. Slow, so run only sparingly in a cronjob. To avoid lock that will
@@ -19,7 +21,8 @@ DECLARE
 	len int;
 BEGIN
 
-	CREATE TABLE admin_new (LIKE planet_osm_roads EXCLUDING CONSTRAINTS);
+	CREATE TABLE admin_new (LIKE planet_osm_roads INCLUDING ALL);
+	ALTER TABLE admin_new DROP CONSTRAINT IF EXISTS admin_new_pkey;
 
 	-- Let the datasource to perform precise filtering, but just don't pull all the crap here
 	FOR row IN SELECT * FROM planet_osm_roads WHERE boundary='administrative' AND admin_level IN ('2', '4') LOOP
@@ -48,7 +51,6 @@ BEGIN
 	END LOOP;
 	DROP TABLE admin;
 	ALTER TABLE admin_new RENAME TO admin;
-	-- TODO: ADD indexes
 END
 $$
 LANGUAGE plpgsql;
