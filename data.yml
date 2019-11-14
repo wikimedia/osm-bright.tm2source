@@ -35,7 +35,7 @@ Layer:
               WHEN "natural" = 'wood' OR landuse IN ('wood', 'forest') THEN 'wood'
               WHEN leisure IN ('national_reserve', 'nature_reserve', 'golf_course') OR boundary = 'national_park' THEN 'park'
               WHEN landuse IN ('cemetery', 'industrial') THEN landuse
-              WHEN aeroway IS NOT NULL THEN 'industrial'
+              WHEN aeroway IS NOT NULL AND aeroway <> '' THEN 'industrial'
               WHEN landuse = 'village_green' OR leisure IN ('park', 'playground') THEN 'park'
               WHEN amenity IN ('school', 'university') THEN 'school'
               WHEN amenity = 'hospital' THEN 'hospital'
@@ -56,7 +56,7 @@ Layer:
                 ) OR (
                     (
                       landuse IN ('cemetery', 'industrial', 'village_green')
-                      OR aeroway IS NOT NULL
+                      OR (aeroway IS NOT NULL AND aeroway <> '')
                       OR leisure IN ('park', 'playground')
                       OR amenity IN ('school', 'university')
                     )
@@ -140,7 +140,7 @@ Layer:
           WHERE
             (
               "natural" = 'water'
-              OR waterway IS NOT NULL
+              OR (waterway IS NOT NULL AND waterway <> '')
               OR landuse = 'reservoir'
               OR landuse = 'pond'
             )
@@ -182,7 +182,7 @@ Layer:
         SELECT osm_id, way, aeroway AS type
           FROM planet_osm_polygon
           WHERE
-            aeroway IS NOT NULL
+            (aeroway IS NOT NULL AND aeroway <> '')
             AND aeroway IN ('apron', 'helipad', 'runway', 'taxiway')
             AND z(!scale_denominator!) >= 12
             AND way && !bbox!
@@ -190,7 +190,7 @@ Layer:
         SELECT osm_id, way, aeroway AS type
           FROM planet_osm_line
           WHERE
-            aeroway IS NOT NULL
+            (aeroway IS NOT NULL AND aeroway <> '')
             AND z(!scale_denominator!) >= 12
             AND way && !bbox!
         ) aeroway
@@ -222,7 +222,7 @@ Layer:
             FROM planet_osm_polygon
             WHERE
               z(!scale_denominator!) >= 14
-              AND building IS NOT NULL
+              AND (building IS NOT NULL AND building <> '')
               AND building <> 'no'
               AND way && !bbox!
         ) building
@@ -266,8 +266,8 @@ Layer:
             END AS class,
             z_order,
             CASE
-              WHEN bridge IS NOT NULL AND bridge <> 'no' AND bridge <> '0' THEN 'bridge'
-              WHEN tunnel IS NOT NULL AND tunnel <> 'no' AND tunnel <> '0' THEN 'tunnel'
+              WHEN bridge IS NOT NULL AND bridge <> '' AND bridge <> 'no' AND bridge <> '0' THEN 'bridge'
+              WHEN tunnel IS NOT NULL AND tunnel <> '' AND tunnel <> 'no' AND tunnel <> '0' THEN 'tunnel'
               ELSE 'road'
             END AS "is"
           FROM planet_osm_line
@@ -518,7 +518,7 @@ Layer:
                 AND z(!scale_denominator!) >= 13
               )
             )
-            AND name IS NOT NULL
+            AND (name IS NOT  AND name <> '')
             AND way && !bbox! --ST_Expand(!bbox!, 64*!pixel_width!)
           ORDER BY
             labelgrid(way, 16, !pixel_width!),
@@ -663,8 +663,8 @@ Layer:
             END AS class,
             z_order,
             CASE
-              WHEN bridge IS NOT NULL AND bridge <> 'no' AND bridge <> '0' THEN 'bridge'
-              WHEN tunnel IS NOT NULL AND tunnel <> 'no' AND tunnel <> '0' THEN 'tunnel'
+              WHEN bridge IS NOT NULL AND bridge <> '' AND bridge <> 'no' AND bridge <> '0' THEN 'bridge'
+              WHEN tunnel IS NOT NULL AND tunnel <> '' AND tunnel <> 'no' AND tunnel <> '0' THEN 'tunnel'
               ELSE 'road'
             END AS "is",
             ref,
@@ -677,7 +677,7 @@ Layer:
                   highway IN ('motorway', 'primary', 'primary_link', 'trunk',
                       'trunk_link', 'secondary', 'secondary_link'
                     )
-                  AND ( name IS NOT NULL OR ref IS NOT NULL)
+                  AND ( (name IS NOT NULL AND name <> '') OR ref IS NOT NULL)
                   AND z(!scale_denominator!) >= 11
                 )
                 OR
@@ -686,7 +686,7 @@ Layer:
                       'living_street', 'pedestrian', 'construction', 'rail', 'monorail',
                       'narrow_gauge', 'subway', 'tram'
                     )
-                  AND name IS NOT NULL
+                  AND (name IS NOT NULL AND name <> '')
                   AND z(!scale_denominator!) >= 12
                 )
                 OR
@@ -695,7 +695,7 @@ Layer:
                       'cycleway', 'ski', 'steps', 'bridleway', 'footway', 'funicular',
                       'light_rail', 'preserved'
                     )
-                  AND name IS NOT NULL
+                  AND (name IS NOT NULL AND name <> '')
                   AND z(!scale_denominator!) >= 14
                 )
               )
