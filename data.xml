@@ -501,7 +501,7 @@ SELECT
         AND z(!scale_denominator!) >= 13
       )
     )
-    AND (name IS NOT  AND name <> '')
+    AND (name IS NOT NULL AND name <> '')
     AND way && !bbox! --ST_Expand(!bbox!, 64*!pixel_width!)
   ORDER BY
     labelgrid(way, 16, !pixel_width!),

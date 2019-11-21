@@ -518,7 +518,7 @@ Layer:
                 AND z(!scale_denominator!) >= 13
               )
             )
-            AND (name IS NOT  AND name <> '')
+            AND (name IS NOT NULL AND name <> '')
             AND way && !bbox! --ST_Expand(!bbox!, 64*!pixel_width!)
           ORDER BY
             labelgrid(way, 16, !pixel_width!),
@@ -677,7 +677,7 @@ Layer:
                   highway IN ('motorway', 'primary', 'primary_link', 'trunk',
                       'trunk_link', 'secondary', 'secondary_link'
                     )
-                  AND ( (name IS NOT NULL AND name <> '') OR ref IS NOT NULL)
+                  AND ( (name IS NOT NULL AND name <> '') OR (ref IS NOT NULL AND ref <> ''))
                   AND z(!scale_denominator!) >= 11
                 )
                 OR
