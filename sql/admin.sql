@@ -1,4 +1,4 @@
-﻿-- Creates and populates the admin table that stores administrative borders with a
+-- Creates and populates the admin table that stores administrative borders with a
 -- precalculated maritime flag. Because admin lines aren't necessarily delimited on
 -- water boundaries, split them so that every piece is either only over water or land
 
